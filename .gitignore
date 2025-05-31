@@ -134,3 +134,31 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# hyperscript.org documentation files
+www/
+
+# Database files
+*.db
+*.sqlite*
+*backup*.db
+
+# Generated data files and reports  
+src/scripts/data/
+*-report.json
+cleanup-results.json
+
+# System files
+.DS_Store
+*.tmp
+Thumbs.db
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+test-*.ts
+*-test.db
