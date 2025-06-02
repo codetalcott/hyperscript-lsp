@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "hyperscript-lsp": {
+      "command": "bun",
+      "args": ["run", "/Users/williamtalcott/projects/hyperscript-lsp/mcp-server/src/index.ts"]
+    }
+  }
+}

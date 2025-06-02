@@ -1,0 +1,38 @@
+{
+  "name": "@hyperscript-lsp/mcp-server",
+  "version": "1.0.0",
+  "description": "Model Context Protocol server for Hyperscript LSP",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "hyperscript-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts ./src/remote-server.ts --outdir ./dist --target node",
+    "dev": "bun run ./src/index.ts",
+    "dev:remote": "bun run ./src/remote-server.ts",
+    "start:remote": "node dist/remote-server.js",
+    "test": "bun run ./src/test.ts",
+    "deploy": "fly deploy",
+    "prepublishOnly": "bun run build"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^0.5.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "keywords": [
+    "mcp",
+    "hyperscript",
+    "lsp",
+    "language-server",
+    "claude"
+  ],
+  "author": "",
+  "license": "MIT"
+}
