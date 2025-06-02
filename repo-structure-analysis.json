@@ -1,0 +1,70 @@
+{
+  "timestamp": "2025-06-01T04:39:45.215Z",
+  "issues": {
+    "testsWithSource": [
+      "tests/unit/server/lsp-handlers.test.ts",
+      "tests/unit/server/hover-integration.test.ts",
+      "tests/unit/server/websocket-integration.test.ts",
+      "tests/unit/server/lsp-websocket.test.ts",
+      "tests/unit/server/lsp-integration.test.ts",
+      "tests/unit/server/lsp-diagnostics.test.ts",
+      "tests/unit/server/completion-integration.test.ts",
+      "tests/unit/server/database-service.test.ts",
+      "tests/unit/server/fixture-integration.test.ts",
+      "tests/unit/server/lsp-server.test.ts",
+      "tests/unit/server/integration.test.ts",
+      "tests/unit/server/deployment.test.ts",
+      "tests/unit/mcp/tools.test.ts",
+      "tests/unit/db/connection.test.ts",
+      "tests/unit/validation/gitignore-check.test.ts",
+      "tests/unit/validation/verify-cleanup.test.ts",
+      "tests/unit/validation/detect-artifacts.test.ts"
+    ],
+    "docsInRoot": [
+      "REPO-STRUCTURE-IMPROVEMENT-SUMMARY.md",
+      "CLAUDE.md"
+    ],
+    "generatedInSource": [],
+    "duplicateConfigs": [
+      "config/deployment/fly-mcp.toml",
+      "config/deployment/fly-lsp.toml",
+      "mcp-server/package.json",
+      "mcp-server/tsconfig.json",
+      "package.json",
+      "package.json",
+      "tsconfig.json",
+      "tsconfig.json",
+      "vscode-extension/package.json",
+      "vscode-extension/package.json",
+      "vscode-extension/tsconfig.json",
+      "vscode-extension/tsconfig.json",
+      "src/mcp/package.json",
+      "src/mcp/package.json"
+    ],
+    "mixedConcerns": {
+      "scripts": [
+        "src/scripts/add-expression-syntax-patterns.ts",
+        "src/scripts/enrich-cookbook-examples.ts",
+        "src/scripts/run-cookbook-extraction.ts",
+        "src/scripts/lsp-query-example.ts"
+      ]
+    }
+  },
+  "statistics": {
+    "totalFiles": 244,
+    "sourceFiles": 67,
+    "testFiles": 17,
+    "docFiles": 106,
+    "configFiles": 27,
+    "dataFiles": 2
+  },
+  "recommendations": [
+    "Separate 17 test files into dedicated test directories",
+    "Consolidate duplicate configuration files: fly-mcp.toml, fly-lsp.toml, package.json, tsconfig.json"
+  ],
+  "complexity": {
+    "nestingDepth": 4,
+    "averagePathLength": 28.0327868852459,
+    "directoriesWithMixedContent": 0
+  }
+}

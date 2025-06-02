@@ -1,13 +1,61 @@
 {
   "name": "hyperscript-lsp",
+  "version": "0.1.0",
+  "description": "Language Server Protocol implementation for hyperscript",
   "private": true,
+  "type": "module",
+  "main": "src/server/index.ts",
+  "scripts": {
+    "build": "bun build src/server/index.ts --outdir=dist",
+    "dev": "bun run src/server/index.ts",
+    "start": "bun run dist/index.js",
+    "server": "bun run src/server/main.ts",
+    "server:ws": "PORT=3001 bun run src/server/websocket-main.ts",
+    "test": "bun test",
+    "test:server": "bun test src/server/*.test.ts",
+    "db:init": "bun run src/db/schema.ts",
+    "db:ingest": "bun run src/db/ingest.ts",
+    "scrape": "bun run src/scripts/scrape-cheerio.ts",
+    "extract:cookbook": "bun run src/scripts/run-cookbook-extraction.ts",
+    "validate": "bun run src/scripts/validation/unified-validation.ts",
+    "detect-artifacts": "bun run src/scripts/validation/detect-artifacts.ts",
+    "cleanup-artifacts": "bun run src/scripts/validation/cleanup-artifacts.ts",
+    "verify-cleanup": "bun test src/scripts/validation/verify-cleanup.test.ts",
+    "check-gitignore": "bun run src/scripts/validation/gitignore-verification.ts",
+    "docker:test": "./scripts/test-docker.sh",
+    "deploy": "./scripts/deploy.sh",
+    "deploy:check": "bun test && ./scripts/test-docker.sh"
+  },
+  "keywords": ["hyperscript", "lsp", "language-server"],
+  "author": "Your Name",
+  "license": "MIT",
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/markdown-it": "^14.1.2",
+    "@types/node": "^20.0.0",
+    "@types/ws": "^8.18.1",
+    "ws": "^8.18.2"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@hono/node-server": "^1.13.1",
+    "@hono/zod-validator": "^0.5.0",
+    "@types/cheerio": "^1.0.0",
+    "@types/uuid": "^10.0.0",
+    "cheerio": "^1.0.0",
+    "front-matter": "^4.0.2",
+    "hono": "^4.7.10",
+    "markdown-it": "^14.1.0",
+    "uuid": "^11.1.0",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.17.5",
+    "vscode-languageserver-textdocument": "^1.0.12",
     "zod": "^3.25.9"
+  },
+  "engines": {
+    "node": ">=16",
+    "bun": ">=1.0.0"
   }
 }

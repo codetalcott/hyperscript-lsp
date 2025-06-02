@@ -1,0 +1,1265 @@
+{
+  "generated": "2025-05-31T19:24:28.114Z",
+  "currentStructure": [
+    {
+      "name": ".DS_Store",
+      "type": "file"
+    },
+    {
+      "name": ".claude",
+      "type": "dir",
+      "children": [
+        {
+          "name": "settings.local.json",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": ".gitignore",
+      "type": "file"
+    },
+    {
+      "name": ".vscode",
+      "type": "dir",
+      "children": [
+        {
+          "name": "settings.json",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "ARTIFACT-CLEANUP-SUMMARY.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "CLAUDE.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "DEMO-SCRIPT.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "DEPLOYMENT.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "Dockerfile",
+      "type": "file"
+    },
+    {
+      "name": "GITIGNORE-SUMMARY.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "LSP-IMPLEMENTATION-SUMMARY.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "MCP-INTEGRATION.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "README.md",
+      "type": "file"
+    },
+    {
+      "name": "REPO-REORGANIZATION-PROPOSAL.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "TEST-SUMMARY.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "VSCODE-SETUP.md",
+      "type": "file",
+      "issues": [
+        "doc-in-root"
+      ]
+    },
+    {
+      "name": "bun.lock",
+      "type": "file"
+    },
+    {
+      "name": "fly.toml",
+      "type": "file"
+    },
+    {
+      "name": "mcp-server",
+      "type": "dir",
+      "children": [
+        {
+          "name": "Dockerfile",
+          "type": "file"
+        },
+        {
+          "name": "INSTALL.md",
+          "type": "file"
+        },
+        {
+          "name": "README.md",
+          "type": "file"
+        },
+        {
+          "name": "REMOTE-MCP-SUMMARY.md",
+          "type": "file"
+        },
+        {
+          "name": "REMOTE-SERVER.md",
+          "type": "file"
+        },
+        {
+          "name": "bun.lock",
+          "type": "file"
+        },
+        {
+          "name": "claude-config.json",
+          "type": "file"
+        },
+        {
+          "name": "fly.toml",
+          "type": "file"
+        },
+        {
+          "name": "package.json",
+          "type": "file"
+        },
+        {
+          "name": "src",
+          "type": "dir",
+          "children": [
+            {
+              "name": "index.ts",
+              "type": "file"
+            },
+            {
+              "name": "remote-server.ts",
+              "type": "file"
+            },
+            {
+              "name": "services",
+              "type": "dir"
+            },
+            {
+              "name": "test.ts",
+              "type": "file"
+            },
+            {
+              "name": "tools",
+              "type": "dir"
+            },
+            {
+              "name": "tools.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "types.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "tsconfig.json",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "package.json",
+      "type": "file"
+    },
+    {
+      "name": "repo-structure-analysis.json",
+      "type": "file"
+    },
+    {
+      "name": "roadmap",
+      "type": "dir",
+      "children": [
+        {
+          "name": "index.md",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "scripts",
+      "type": "dir",
+      "children": [
+        {
+          "name": "analyze-repo-structure.ts",
+          "type": "file"
+        },
+        {
+          "name": "deploy.sh",
+          "type": "file"
+        },
+        {
+          "name": "generate-structure-diagram.ts",
+          "type": "file"
+        },
+        {
+          "name": "migrate-structure.ts",
+          "type": "file"
+        },
+        {
+          "name": "test-docker.sh",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "src",
+      "type": "dir",
+      "children": [
+        {
+          "name": "db",
+          "type": "dir",
+          "children": [
+            {
+              "name": "connection.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "connection.ts",
+              "type": "file"
+            },
+            {
+              "name": "ingest.ts",
+              "type": "file"
+            },
+            {
+              "name": "query.ts",
+              "type": "file"
+            },
+            {
+              "name": "schema.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "hyperscript.db",
+          "type": "file",
+          "issues": [
+            "data-file"
+          ]
+        },
+        {
+          "name": "hyperscript_backup_2025-05-31T12-45-37-922Z.db",
+          "type": "file",
+          "issues": [
+            "data-file"
+          ]
+        },
+        {
+          "name": "mcp",
+          "type": "dir",
+          "children": [
+            {
+              "name": "hyperscript-mcp-server.ts",
+              "type": "file"
+            },
+            {
+              "name": "package.json",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "schemas.ts",
+          "type": "file"
+        },
+        {
+          "name": "scripts",
+          "type": "dir",
+          "children": [
+            {
+              "name": "add-expression-syntax-patterns.ts",
+              "type": "file"
+            },
+            {
+              "name": "data",
+              "type": "dir"
+            },
+            {
+              "name": "db-init.ts",
+              "type": "file"
+            },
+            {
+              "name": "db-query.ts",
+              "type": "file"
+            },
+            {
+              "name": "enhanced-cookbook-parser.ts",
+              "type": "file"
+            },
+            {
+              "name": "enrich-cookbook-examples.ts",
+              "type": "file"
+            },
+            {
+              "name": "extract-doc-examples.ts",
+              "type": "file"
+            },
+            {
+              "name": "extract-typst-examples.ts",
+              "type": "file"
+            },
+            {
+              "name": "lsp-query-example.ts",
+              "type": "file"
+            },
+            {
+              "name": "run-cookbook-extraction.ts",
+              "type": "file"
+            },
+            {
+              "name": "scrape-cheerio.ts",
+              "type": "file"
+            },
+            {
+              "name": "test-cookbook-extraction.ts",
+              "type": "file"
+            },
+            {
+              "name": "validation",
+              "type": "dir"
+            }
+          ]
+        },
+        {
+          "name": "server",
+          "type": "dir",
+          "children": [
+            {
+              "name": "completion-integration.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "database-service.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "database-service.ts",
+              "type": "file"
+            },
+            {
+              "name": "deployment.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "fixture-integration.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "hover-integration.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "index.ts",
+              "type": "file"
+            },
+            {
+              "name": "integration.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "lsp-diagnostics.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "lsp-handlers.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "lsp-handlers.ts",
+              "type": "file"
+            },
+            {
+              "name": "lsp-integration.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "lsp-server.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "lsp-server.ts",
+              "type": "file"
+            },
+            {
+              "name": "lsp-websocket.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "lsp-websocket.ts",
+              "type": "file"
+            },
+            {
+              "name": "main.ts",
+              "type": "file"
+            },
+            {
+              "name": "parser.ts",
+              "type": "file"
+            },
+            {
+              "name": "simple-server.ts",
+              "type": "file"
+            },
+            {
+              "name": "test-fixtures",
+              "type": "dir"
+            },
+            {
+              "name": "test-server.ts",
+              "type": "file"
+            },
+            {
+              "name": "types.ts",
+              "type": "file"
+            },
+            {
+              "name": "websocket-integration.test.ts",
+              "type": "file",
+              "issues": [
+                "test-mixed"
+              ]
+            },
+            {
+              "name": "websocket-main.ts",
+              "type": "file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "test-server.ts",
+      "type": "file"
+    },
+    {
+      "name": "tsconfig.json",
+      "type": "file"
+    },
+    {
+      "name": "vscode-extension",
+      "type": "dir",
+      "children": [
+        {
+          "name": ".vscodeignore",
+          "type": "file"
+        },
+        {
+          "name": "README.md",
+          "type": "file"
+        },
+        {
+          "name": "package.json",
+          "type": "file"
+        },
+        {
+          "name": "src",
+          "type": "dir",
+          "children": [
+            {
+              "name": "extension.ts",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "tsconfig.json",
+          "type": "file"
+        }
+      ]
+    },
+    {
+      "name": "www",
+      "type": "dir",
+      "children": [
+        {
+          "name": ".DS_Store",
+          "type": "file"
+        },
+        {
+          "name": ".eleventy.js",
+          "type": "file"
+        },
+        {
+          "name": "_build",
+          "type": "dir",
+          "children": [
+            {
+              "name": "widgets.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "_data",
+          "type": "dir",
+          "children": [
+            {
+              "name": "layout.json",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "_includes",
+          "type": "dir",
+          "children": [
+            {
+              "name": "commands_table.md",
+              "type": "file"
+            },
+            {
+              "name": "js_end.md",
+              "type": "file"
+            },
+            {
+              "name": "layout.njk",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "a-fun-guide.md",
+          "type": "file"
+        },
+        {
+          "name": "clickedMessage.md",
+          "type": "file"
+        },
+        {
+          "name": "commands",
+          "type": "dir",
+          "children": [
+            {
+              "name": "add.md",
+              "type": "file"
+            },
+            {
+              "name": "append.md",
+              "type": "file"
+            },
+            {
+              "name": "async.md",
+              "type": "file"
+            },
+            {
+              "name": "beep.md",
+              "type": "file"
+            },
+            {
+              "name": "break.md",
+              "type": "file"
+            },
+            {
+              "name": "call.md",
+              "type": "file"
+            },
+            {
+              "name": "continue.md",
+              "type": "file"
+            },
+            {
+              "name": "decrement.md",
+              "type": "file"
+            },
+            {
+              "name": "default.md",
+              "type": "file"
+            },
+            {
+              "name": "fetch.md",
+              "type": "file"
+            },
+            {
+              "name": "go.md",
+              "type": "file"
+            },
+            {
+              "name": "halt.md",
+              "type": "file"
+            },
+            {
+              "name": "hide.md",
+              "type": "file"
+            },
+            {
+              "name": "if.md",
+              "type": "file"
+            },
+            {
+              "name": "increment.md",
+              "type": "file"
+            },
+            {
+              "name": "js.md",
+              "type": "file"
+            },
+            {
+              "name": "log.md",
+              "type": "file"
+            },
+            {
+              "name": "make.md",
+              "type": "file"
+            },
+            {
+              "name": "measure.md",
+              "type": "file"
+            },
+            {
+              "name": "pick.md",
+              "type": "file"
+            },
+            {
+              "name": "pseudo-commands.md",
+              "type": "file"
+            },
+            {
+              "name": "put.md",
+              "type": "file"
+            },
+            {
+              "name": "remove.md",
+              "type": "file"
+            },
+            {
+              "name": "render.md",
+              "type": "file"
+            },
+            {
+              "name": "repeat.md",
+              "type": "file"
+            },
+            {
+              "name": "return.md",
+              "type": "file"
+            },
+            {
+              "name": "send.md",
+              "type": "file"
+            },
+            {
+              "name": "set.md",
+              "type": "file"
+            },
+            {
+              "name": "settle.md",
+              "type": "file"
+            },
+            {
+              "name": "show.md",
+              "type": "file"
+            },
+            {
+              "name": "take.md",
+              "type": "file"
+            },
+            {
+              "name": "tell.md",
+              "type": "file"
+            },
+            {
+              "name": "throw.md",
+              "type": "file"
+            },
+            {
+              "name": "toggle.md",
+              "type": "file"
+            },
+            {
+              "name": "transition.md",
+              "type": "file"
+            },
+            {
+              "name": "trigger.md",
+              "type": "file"
+            },
+            {
+              "name": "wait.md",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "comparison.md",
+          "type": "file"
+        },
+        {
+          "name": "cookbook",
+          "type": "dir",
+          "children": [
+            {
+              "name": "10-concat-two-strings.md",
+              "type": "file"
+            },
+            {
+              "name": "20-indeterminate-checkbox.md",
+              "type": "file"
+            },
+            {
+              "name": "30-fade-and-remove.md",
+              "type": "file"
+            },
+            {
+              "name": "40-disable-btn-during-request.md",
+              "type": "file"
+            },
+            {
+              "name": "50-disable-btn-during-request-all.md",
+              "type": "file"
+            },
+            {
+              "name": "60-filter-a-group-of-elements.md",
+              "type": "file"
+            },
+            {
+              "name": "70-drag-n-drop.md",
+              "type": "file"
+            },
+            {
+              "name": "80-event-filtering.md",
+              "type": "file"
+            },
+            {
+              "name": "90-filter-table-rows.md",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "cookbook.md",
+          "type": "file"
+        },
+        {
+          "name": "css",
+          "type": "dir",
+          "children": [
+            {
+              "name": "prism-htmx.css",
+              "type": "file"
+            },
+            {
+              "name": "site.css",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "docs.md",
+          "type": "file"
+        },
+        {
+          "name": "expressions",
+          "type": "dir",
+          "children": [
+            {
+              "name": "as.md",
+              "type": "file"
+            },
+            {
+              "name": "async.md",
+              "type": "file"
+            },
+            {
+              "name": "attribute-ref.md",
+              "type": "file"
+            },
+            {
+              "name": "beep.md",
+              "type": "file"
+            },
+            {
+              "name": "block-literal.md",
+              "type": "file"
+            },
+            {
+              "name": "class-reference.md",
+              "type": "file"
+            },
+            {
+              "name": "closest.md",
+              "type": "file"
+            },
+            {
+              "name": "comparison-operator.md",
+              "type": "file"
+            },
+            {
+              "name": "cookies.md",
+              "type": "file"
+            },
+            {
+              "name": "id-reference.md",
+              "type": "file"
+            },
+            {
+              "name": "it.md",
+              "type": "file"
+            },
+            {
+              "name": "logical-operator.md",
+              "type": "file"
+            },
+            {
+              "name": "me.md",
+              "type": "file"
+            },
+            {
+              "name": "no.md",
+              "type": "file"
+            },
+            {
+              "name": "of.md",
+              "type": "file"
+            },
+            {
+              "name": "positional.md",
+              "type": "file"
+            },
+            {
+              "name": "possessive.md",
+              "type": "file"
+            },
+            {
+              "name": "query-reference.md",
+              "type": "file"
+            },
+            {
+              "name": "relative-positional.md",
+              "type": "file"
+            },
+            {
+              "name": "string.md",
+              "type": "file"
+            },
+            {
+              "name": "time-expression.md",
+              "type": "file"
+            },
+            {
+              "name": "you.md",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "expressions.md",
+          "type": "file"
+        },
+        {
+          "name": "features",
+          "type": "dir",
+          "children": [
+            {
+              "name": "behavior.md",
+              "type": "file"
+            },
+            {
+              "name": "def.md",
+              "type": "file"
+            },
+            {
+              "name": "event-source.md",
+              "type": "file"
+            },
+            {
+              "name": "init.md",
+              "type": "file"
+            },
+            {
+              "name": "js.md",
+              "type": "file"
+            },
+            {
+              "name": "on.md",
+              "type": "file"
+            },
+            {
+              "name": "set.md",
+              "type": "file"
+            },
+            {
+              "name": "socket.md",
+              "type": "file"
+            },
+            {
+              "name": "worker.md",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "hdb.md",
+          "type": "file"
+        },
+        {
+          "name": "hypermedia-section.typ",
+          "type": "file"
+        },
+        {
+          "name": "img",
+          "type": "dir",
+          "children": [
+            {
+              "name": "debugging.gif",
+              "type": "file"
+            },
+            {
+              "name": "hdb-code.png",
+              "type": "file"
+            },
+            {
+              "name": "hdb-eval.png",
+              "type": "file"
+            },
+            {
+              "name": "hdb.png",
+              "type": "file"
+            },
+            {
+              "name": "hyperscript-cheatsheet.pdf",
+              "type": "file"
+            },
+            {
+              "name": "light_logo.png",
+              "type": "file"
+            },
+            {
+              "name": "topo.svg",
+              "type": "file"
+            },
+            {
+              "name": "transparent_logo.png",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "index.md",
+          "type": "file"
+        },
+        {
+          "name": "js",
+          "type": "dir",
+          "children": [
+            {
+              "name": "_hyperscript.js",
+              "type": "file"
+            },
+            {
+              "name": "_hyperscript.min.js",
+              "type": "file"
+            },
+            {
+              "name": "_hyperscript_w9y.min.js",
+              "type": "file"
+            },
+            {
+              "name": "hdb.min.js",
+              "type": "file"
+            },
+            {
+              "name": "lib",
+              "type": "dir"
+            },
+            {
+              "name": "prism-hyperscript.js",
+              "type": "file"
+            },
+            {
+              "name": "worker.js",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "reference.md",
+          "type": "file"
+        }
+      ]
+    }
+  ],
+  "idealStructure": [
+    {
+      "name": ".github",
+      "type": "dir",
+      "children": [
+        {
+          "name": "workflows",
+          "type": "dir"
+        },
+        {
+          "name": "ISSUE_TEMPLATE",
+          "type": "dir"
+        }
+      ]
+    },
+    {
+      "name": "config",
+      "type": "dir",
+      "children": [
+        {
+          "name": "docker",
+          "type": "dir",
+          "children": [
+            {
+              "name": "lsp.Dockerfile",
+              "type": "file"
+            },
+            {
+              "name": "mcp.Dockerfile",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "deployment",
+          "type": "dir",
+          "children": [
+            {
+              "name": "fly-lsp.toml",
+              "type": "file"
+            },
+            {
+              "name": "fly-mcp.toml",
+              "type": "file"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "data",
+      "type": "dir",
+      "children": [
+        {
+          "name": "database",
+          "type": "dir",
+          "children": [
+            {
+              "name": "hyperscript.db",
+              "type": "file"
+            },
+            {
+              "name": "backups",
+              "type": "dir"
+            }
+          ]
+        },
+        {
+          "name": "extracted",
+          "type": "dir"
+        },
+        {
+          "name": "reports",
+          "type": "dir"
+        }
+      ]
+    },
+    {
+      "name": "docs",
+      "type": "dir",
+      "children": [
+        {
+          "name": "setup",
+          "type": "dir"
+        },
+        {
+          "name": "architecture",
+          "type": "dir"
+        },
+        {
+          "name": "guides",
+          "type": "dir"
+        },
+        {
+          "name": "dev",
+          "type": "dir"
+        }
+      ]
+    },
+    {
+      "name": "packages",
+      "type": "dir",
+      "children": [
+        {
+          "name": "lsp-server",
+          "type": "dir",
+          "children": [
+            {
+              "name": "src",
+              "type": "dir"
+            },
+            {
+              "name": "tests",
+              "type": "dir"
+            },
+            {
+              "name": "package.json",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "mcp-server",
+          "type": "dir",
+          "children": [
+            {
+              "name": "src",
+              "type": "dir"
+            },
+            {
+              "name": "tests",
+              "type": "dir"
+            },
+            {
+              "name": "package.json",
+              "type": "file"
+            }
+          ]
+        },
+        {
+          "name": "vscode-extension",
+          "type": "dir"
+        },
+        {
+          "name": "shared",
+          "type": "dir"
+        }
+      ]
+    },
+    {
+      "name": "scripts",
+      "type": "dir",
+      "children": [
+        {
+          "name": "data-collection",
+          "type": "dir"
+        },
+        {
+          "name": "database",
+          "type": "dir"
+        },
+        {
+          "name": "deployment",
+          "type": "dir"
+        },
+        {
+          "name": "validation",
+          "type": "dir"
+        }
+      ]
+    },
+    {
+      "name": "tests",
+      "type": "dir",
+      "children": [
+        {
+          "name": "unit",
+          "type": "dir"
+        },
+        {
+          "name": "integration",
+          "type": "dir"
+        },
+        {
+          "name": "e2e",
+          "type": "dir"
+        },
+        {
+          "name": "fixtures",
+          "type": "dir"
+        }
+      ]
+    },
+    {
+      "name": "README.md",
+      "type": "file"
+    },
+    {
+      "name": "package.json",
+      "type": "file"
+    },
+    {
+      "name": "tsconfig.json",
+      "type": "file"
+    }
+  ]
+}
