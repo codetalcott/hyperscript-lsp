@@ -3,7 +3,7 @@ import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const DB_PATH = path.join(__dirname, '..', '..', '..', 'src', 'hyperscript.db');
+const DB_PATH = path.join(__dirname, '..', '..', '..', 'data', 'database', 'hyperscript.db');
 
 export class DatabaseService {
   private db: Database;
