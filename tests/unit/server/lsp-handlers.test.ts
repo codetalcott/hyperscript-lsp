@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeAll } from "bun:test";
-import type { DatabaseService } from "./database-service";
-import type { LSPHandlers } from "./lsp-handlers";
+import type { DatabaseService } from "../../../src/server/database-service";
+import type { LSPHandlers } from "../../../src/server/lsp-handlers";
 
 describe("LSP Handlers", () => {
   let handlers: LSPHandlers;
@@ -59,7 +59,7 @@ describe("LSP Handlers", () => {
       }
     };
     
-    const { createLSPHandlers } = require("./lsp-handlers");
+    const { createLSPHandlers } = require("../../../src/server/lsp-handlers");
     handlers = createLSPHandlers(mockDbService);
   });
   

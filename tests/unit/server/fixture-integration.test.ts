@@ -1,9 +1,9 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
 import { readFileSync } from "fs";
 import { join } from "path";
-import { createLSPHandlers } from "./lsp-handlers";
-import { createDatabaseService } from "./database-service";
-import type { CompletionParams, HoverParams } from "./types";
+import { createLSPHandlers } from "../../../src/server/lsp-handlers";
+import { createDatabaseService } from "../../../src/server/database-service";
+import type { CompletionParams, HoverParams } from "../../../src/server/types";
 
 describe("LSP Integration with Real Hyperscript Files", () => {
   let handlers: ReturnType<typeof createLSPHandlers>;

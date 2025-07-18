@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 import { test, expect, describe } from "bun:test";
-import { analyzeTool, completionTool, hoverTool, searchTool, generateTool } from './tools/index.js';
+import { analyzeTool, completionTool, hoverTool, searchTool, generateTool } from '../../../mcp-server/src/tools/index.js';
 
 describe("MCP Tools", () => {
   describe("analyze_hyperscript", () => {

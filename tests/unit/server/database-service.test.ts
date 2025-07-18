@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
-import type { DatabaseService } from "./database-service";
+import type { DatabaseService } from "../../../src/server/database-service";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
 
@@ -8,8 +8,8 @@ describe("Database Service", () => {
   const testDbPath = path.join(import.meta.dir, "test-service.db");
   
   beforeAll(async () => {
-    const { createDatabaseService } = require("./database-service");
-    const { createConnection } = require("../db/connection");
+    const { createDatabaseService } = require("../../../src/server/database-service");
+    const { createConnection } = require("../../../src/db/connection");
     
     // Create schema in test database
     const conn = createConnection({ path: testDbPath });
@@ -190,7 +190,7 @@ describe("Database Service", () => {
       expect(completions).toEqual([]);
       
       // Recreate service for other tests
-      const { createDatabaseService } = require("./database-service");
+      const { createDatabaseService } = require("../../../src/server/database-service");
       service = createDatabaseService({ path: testDbPath });
     });
   });

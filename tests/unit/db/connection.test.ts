@@ -2,7 +2,7 @@ import { describe, expect, test, beforeAll, afterAll } from "bun:test";
 import { Database } from "bun:sqlite";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import type { DatabaseConnection, QueryResult } from "./connection";
+import type { DatabaseConnection, QueryResult } from "../../../src/db/connection";
 
 describe("Database Connection", () => {
   const testDbPath = path.join(import.meta.dir, "test.db");
@@ -18,7 +18,7 @@ describe("Database Connection", () => {
   
   describe("Connection Management", () => {
     test("should create database connection", () => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       const conn = createConnection({ path: testDbPath });
       
       expect(conn).toBeDefined();
@@ -28,7 +28,7 @@ describe("Database Connection", () => {
     });
     
     test("should use default database path if not specified", () => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       const conn = createConnection();
       
       expect(conn).toBeDefined();
@@ -38,7 +38,7 @@ describe("Database Connection", () => {
     });
     
     test("should create connection pool", () => {
-      const { createConnectionPool } = require("./connection");
+      const { createConnectionPool } = require("../../../src/db/connection");
       const pool = createConnectionPool({ path: testDbPath, poolSize: 3 });
       
       expect(pool).toBeDefined();
@@ -50,7 +50,7 @@ describe("Database Connection", () => {
   
   describe("Query Execution", () => {
     test("should execute queries", () => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       const conn = createConnection({ path: testDbPath });
       
       // Create a test table
@@ -75,7 +75,7 @@ describe("Database Connection", () => {
     });
     
     test("should support prepared statements", () => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       const conn = createConnection({ path: testDbPath });
       
       conn.exec(`
@@ -100,7 +100,7 @@ describe("Database Connection", () => {
     let conn: DatabaseConnection;
     
     beforeAll(() => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       conn = createConnection({ path: testDbPath });
       
       // Set up test schema
@@ -210,7 +210,7 @@ describe("Database Connection", () => {
   
   describe("Error Handling", () => {
     test("should handle query errors gracefully", () => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       const conn = createConnection({ path: testDbPath });
       
       expect(() => {
@@ -221,7 +221,7 @@ describe("Database Connection", () => {
     });
     
     test("should validate connection before queries", () => {
-      const { createConnection } = require("./connection");
+      const { createConnection } = require("../../../src/db/connection");
       const conn = createConnection({ path: testDbPath });
       conn.close();
       

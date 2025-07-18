@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
-import type { WebSocketLSPServer } from "./lsp-websocket";
+import type { WebSocketLSPServer } from "../../../src/server/lsp-websocket";
 
 describe("WebSocket LSP Server", () => {
   let server: WebSocketLSPServer;
@@ -11,14 +11,14 @@ describe("WebSocket LSP Server", () => {
   });
   
   test("should create WebSocket server", () => {
-    const { createWebSocketLSPServer } = require("./lsp-websocket");
+    const { createWebSocketLSPServer } = require("../../../src/server/lsp-websocket");
     server = createWebSocketLSPServer({ port: 3001 });
     expect(server).toBeDefined();
     expect(server.port).toBe(3001);
   });
   
   test("should handle WebSocket connections", async () => {
-    const { createWebSocketLSPServer } = require("./lsp-websocket");
+    const { createWebSocketLSPServer } = require("../../../src/server/lsp-websocket");
     const testServer = createWebSocketLSPServer({ port: 3002 });
     await testServer.start();
     
@@ -36,7 +36,7 @@ describe("WebSocket LSP Server", () => {
   });
   
   test("should handle LSP messages over WebSocket", async () => {
-    const { createWebSocketLSPServer } = require("./lsp-websocket");
+    const { createWebSocketLSPServer } = require("../../../src/server/lsp-websocket");
     const testServer = createWebSocketLSPServer({ port: 3003 });
     await testServer.start();
     

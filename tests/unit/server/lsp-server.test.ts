@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
 import { Hono } from "hono";
-import type { LSPServer } from "./lsp-server";
+import type { LSPServer } from "../../../src/server/lsp-server";
 
 describe("LSP Server", () => {
   let server: LSPServer;
@@ -15,20 +15,20 @@ describe("LSP Server", () => {
   
   describe("Server Initialization", () => {
     test("should create a Hono app instance", () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       expect(server).toBeDefined();
       expect(server.app).toBeInstanceOf(Hono);
     });
     
     test("should have default port configuration", () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       expect(server.port).toBe(3000);
     });
     
     test("should accept custom port configuration", () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer({ port: 4000 });
       expect(server.port).toBe(4000);
     });
@@ -36,7 +36,7 @@ describe("LSP Server", () => {
   
   describe("LSP Protocol", () => {
     test("should handle Content-Length header properly", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const message = JSON.stringify({
@@ -62,7 +62,7 @@ describe("LSP Server", () => {
     });
     
     test("should parse LSP messages correctly", () => {
-      const { parseLSPMessage } = require("./lsp-server");
+      const { parseLSPMessage } = require("../../../src/server/lsp-server");
       
       const message = JSON.stringify({
         jsonrpc: "2.0",
@@ -82,7 +82,7 @@ describe("LSP Server", () => {
   
   describe("Initialize Request", () => {
     test("should respond to initialize request", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const initRequest = {
@@ -113,7 +113,7 @@ describe("LSP Server", () => {
     });
     
     test("should advertise server capabilities", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const initRequest = {
@@ -143,7 +143,7 @@ describe("LSP Server", () => {
   
   describe("Error Handling", () => {
     test("should handle invalid JSON-RPC requests", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const response = await server.app.request("/", {
@@ -157,7 +157,7 @@ describe("LSP Server", () => {
     });
     
     test("should handle unknown methods", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const request = {
@@ -180,7 +180,7 @@ describe("LSP Server", () => {
   
   describe("Shutdown and Exit", () => {
     test("should handle shutdown request", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const shutdownRequest = {
@@ -202,7 +202,7 @@ describe("LSP Server", () => {
     });
     
     test("should handle exit notification", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const exitNotification = {
@@ -220,7 +220,7 @@ describe("LSP Server", () => {
     });
     
     test("should handle initialized notification", async () => {
-      const { createLSPServer } = require("./lsp-server");
+      const { createLSPServer } = require("../../../src/server/lsp-server");
       const server = createLSPServer();
       
       const initializedNotification = {

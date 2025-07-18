@@ -141,6 +141,7 @@ export interface LSPHandlers {
   handleDidChange: (params: DidChangeTextDocumentParams) => void;
   handleDidClose: (params: DidCloseTextDocumentParams) => void;
   handleDiagnostics: (uri: string) => Promise<Diagnostic[]>;
+  provideDiagnostics: (uri: string) => Promise<Diagnostic[]>;
   handleDocumentSymbols: (uri: string) => Promise<DocumentSymbol[]>;
   handleGoToDefinition: (params: DefinitionParams) => Promise<Location[]>;
   
@@ -300,6 +301,277 @@ export function createLSPHandlers(dbService: DatabaseService): LSPHandlers {
     return content;
   }
   
+  // Helper function for diagnostics (shared between both methods)
+  async function provideDiagnosticsImpl(uri: string): Promise<Diagnostic[]> {
+    const text = documents.get(uri);
+    if (!text) return [];
+    
+    const diagnostics: Diagnostic[] = [];
+    const lines = text.split('\n');
+    
+    // Track variables for semantic analysis
+    const declaredVariables = new Set<string>();
+    const usedVariables = new Set<string>();
+    
+    for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+      const line = lines[lineIndex];
+      if (!line) continue;
+      
+      const trimmed = line.trim();
+      
+      // Skip empty lines and comments
+      if (!trimmed || trimmed.startsWith('--')) continue;
+      
+      // Check for unmatched quotes
+      const singleQuotes = (line.match(/'/g) || []).length;
+      const doubleQuotes = (line.match(/"/g) || []).length;
+      
+      if (singleQuotes % 2 !== 0) {
+        diagnostics.push({
+          range: {
+            start: { line: lineIndex, character: 0 },
+            end: { line: lineIndex, character: line.length }
+          },
+          severity: DiagnosticSeverity.Error,
+          code: "syntax-error",
+          message: "Unmatched single quote",
+          source: "hyperscript-lsp"
+        });
+      }
+      
+      if (doubleQuotes % 2 !== 0) {
+        diagnostics.push({
+          range: {
+            start: { line: lineIndex, character: 0 },
+            end: { line: lineIndex, character: line.length }
+          },
+          severity: DiagnosticSeverity.Error,
+          code: "syntax-error",
+          message: "Unmatched double quote",
+          source: "hyperscript-lsp"
+        });
+      }
+      
+      // Check for unmatched control structures that REQUIRE 'end'
+      if (trimmed.startsWith('if ') && !findMatchingEnd(lines, lineIndex)) {
+        diagnostics.push({
+          range: {
+            start: { line: lineIndex, character: 0 },
+            end: { line: lineIndex, character: line.length }
+          },
+          severity: DiagnosticSeverity.Error,
+          code: "syntax-error",
+          message: "Missing 'end' for 'if' statement",
+          source: "hyperscript-lsp"
+        });
+      }
+      
+      // Note: 'on' handlers don't require 'end' - it's optional in hyperscript
+      // Only flag as error if we detect an obvious multi-line handler that looks incomplete
+      if (trimmed.startsWith('on ') && lineIndex < lines.length - 1) {
+        const nextLine = lines[lineIndex + 1]?.trim();
+        if (nextLine && !nextLine.startsWith('on ') && !nextLine.startsWith('end') && 
+            !nextLine.startsWith('--') && nextLine.length > 0) {
+          // This looks like a multi-line handler, check if it eventually has an 'end'
+          let hasEnd = false;
+          for (let i = lineIndex + 1; i < lines.length; i++) {
+            const line = lines[i]?.trim();
+            if (line === 'end') {
+              hasEnd = true;
+              break;
+            }
+            if (line && (line.startsWith('on ') || line.startsWith('behavior ') || 
+                        line.startsWith('def ') || line.startsWith('init'))) {
+              break; // Found another top-level construct
+            }
+          }
+          // Only warn, don't error, since 'end' is optional
+          if (!hasEnd && lineIndex < lines.length - 2) {
+            diagnostics.push({
+              range: {
+                start: { line: lineIndex, character: 0 },
+                end: { line: lineIndex, character: line.length }
+              },
+              severity: DiagnosticSeverity.Information, // Just informational, not error
+              code: "style-suggestion",
+              message: "Consider adding 'end' for multi-line event handler (optional but recommended for clarity)",
+              source: "hyperscript-lsp"
+            });
+          }
+        }
+      }
+      
+      // Check for incomplete 'put' commands
+      if (trimmed.startsWith('put ') && !trimmed.includes(' into ')) {
+        diagnostics.push({
+          range: {
+            start: { line: lineIndex, character: 0 },
+            end: { line: lineIndex, character: line.length }
+          },
+          severity: DiagnosticSeverity.Error,
+          code: "syntax-error",
+          message: "Incomplete 'put' command - missing 'into' clause",
+          source: "hyperscript-lsp"
+        });
+      }
+      
+      // Track variable declarations
+      const setMatch = trimmed.match(/^set\s+(\w+)\s+to\s+/);
+      if (setMatch && setMatch[1]) {
+        declaredVariables.add(setMatch[1]);
+      }
+      
+      // Track variable usage in simple contexts
+      const putMatch = trimmed.match(/^put\s+(\w+)\s+into\s+/);
+      if (putMatch && putMatch[1] && !putMatch[1].startsWith("'") && !putMatch[1].startsWith('"') && !['me', 'it', 'you'].includes(putMatch[1])) {
+        usedVariables.add(putMatch[1]);
+      }
+      
+      // Check for unknown commands/keywords
+      const words = trimmed.split(/\s+/);
+      
+      // Check first word (commands)
+      if (words.length > 0 && words[0]) {
+        const firstWord = words[0].toLowerCase();
+        
+        // Skip common control structures and known patterns  
+        if (!['if', 'else', 'end', 'on', 'behavior', 'init', 'def', 'then', 'set', 'put', 
+              'tell', 'trigger', 'send', 'fetch', 'go', 'call', 'repeat', 'for', 'while', 
+              'return', 'continue', 'break', 'try', 'catch', 'throw'].includes(firstWord)) {
+          try {
+            const hoverInfo = await dbService.getHoverInfo(firstWord);
+            if (!hoverInfo) {
+              const startChar = line.indexOf(words[0]);
+              diagnostics.push({
+                range: {
+                  start: { line: lineIndex, character: startChar },
+                  end: { line: lineIndex, character: startChar + words[0].length }
+                },
+                severity: DiagnosticSeverity.Error,
+                code: "unknown-command",
+                message: `Unknown command: '${firstWord}'`,
+                source: "hyperscript-lsp"
+              });
+            }
+          } catch (error) {
+            // Ignore database errors for diagnostics
+          }
+        }
+      }
+      
+      // Check for unknown words in other positions (e.g., after 'into')
+      for (let i = 1; i < words.length; i++) {
+        const word = words[i];
+        if (word && !word.startsWith("'") && !word.startsWith('"') && 
+            !word.startsWith('#') && !word.startsWith('.') &&
+            !['me', 'it', 'you', 'the', 'my', 'its', 'a', 'an', 'and', 'or', 'not',
+              'to', 'from', 'into', 'onto', 'with', 'without', 'of', 'in', 'on', 'at',
+              'true', 'false', 'null', 'undefined'].includes(word.toLowerCase())) {
+          
+          // Check if this looks like a variable or unknown identifier
+          if (/^[a-zA-Z_]\w*$/.test(word)) {
+            try {
+              const hoverInfo = await dbService.getHoverInfo(word.toLowerCase());
+              if (!hoverInfo) {
+                const startChar = line.indexOf(word, line.indexOf(words[i-1] || ''));
+                diagnostics.push({
+                  range: {
+                    start: { line: lineIndex, character: startChar },
+                    end: { line: lineIndex, character: startChar + word.length }
+                  },
+                  severity: DiagnosticSeverity.Error,
+                  code: "unknown-command",
+                  message: `Unknown command: '${word.toLowerCase()}'`,
+                  source: "hyperscript-lsp"
+                });
+              }
+            } catch (error) {
+              // Ignore database errors for diagnostics
+            }
+          }
+        }
+      }
+      
+      // Check for potentially invalid events - but be lenient with common ones
+      const eventMatch = trimmed.match(/^on\s+(\w+)/);
+      if (eventMatch && eventMatch[1]) {
+        const eventName = eventMatch[1];
+        // More comprehensive list of common events
+        const commonEvents = [
+          'click', 'load', 'submit', 'change', 'keyup', 'keydown', 'focus', 'blur', 
+          'mouseenter', 'mouseleave', 'mouseover', 'mouseout', 'mousedown', 'mouseup',
+          'resize', 'scroll', 'input', 'invalid', 'reset', 'select', 'toggle',
+          'contextmenu', 'dblclick', 'dragstart', 'drag', 'dragend', 'drop', 'dragover',
+          'animationend', 'transitionend'
+        ];
+        // Only warn for clearly non-standard events
+        if (!commonEvents.includes(eventName) && eventName.length > 2 && !eventName.includes(':')) {
+          const startChar = line.indexOf(eventName);
+          diagnostics.push({
+            range: {
+              start: { line: lineIndex, character: startChar },
+              end: { line: lineIndex, character: startChar + eventName.length }
+            },
+            severity: DiagnosticSeverity.Warning,
+            code: "unknown-event",
+            message: `Potentially unknown event: '${eventName}'`,
+            source: "hyperscript-lsp"
+          });
+        }
+      }
+    }
+    
+    // Check for unused variables
+    for (const variable of declaredVariables) {
+      if (!usedVariables.has(variable)) {
+        // Find the line where this variable was declared
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+          const line = lines[lineIndex];
+          if (line && line.includes(`set ${variable} to `)) {
+            const startChar = line.indexOf(variable);
+            diagnostics.push({
+              range: {
+                start: { line: lineIndex, character: startChar },
+                end: { line: lineIndex, character: startChar + variable.length }
+              },
+              severity: DiagnosticSeverity.Warning,
+              code: "unused-variable",
+              message: `Variable '${variable}' is declared but never used`,
+              source: "hyperscript-lsp"
+            });
+            break;
+          }
+        }
+      }
+    }
+    
+    // Check for undefined variables  
+    for (const variable of usedVariables) {
+      if (!declaredVariables.has(variable)) {
+        // Find the line where this variable was used
+        for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
+          const line = lines[lineIndex];
+          if (line && line.includes(`put ${variable} into `)) {
+            const startChar = line.indexOf(variable);
+            diagnostics.push({
+              range: {
+                start: { line: lineIndex, character: startChar },
+                end: { line: lineIndex, character: startChar + variable.length }
+              },
+              severity: DiagnosticSeverity.Error,
+              code: "undefined-variable",
+              message: `Variable '${variable}' is used but not defined`,
+              source: "hyperscript-lsp"
+            });
+            break;
+          }
+        }
+      }
+    }
+    
+    return diagnostics;
+  }
+  
   return {
     handleCompletion: async (params: CompletionParams): Promise<CompletionItem[]> => {
       const uri = params.textDocument.uri;
@@ -395,75 +667,11 @@ export function createLSPHandlers(dbService: DatabaseService): LSPHandlers {
     },
 
     handleDiagnostics: async (uri: string): Promise<Diagnostic[]> => {
-      const text = documents.get(uri);
-      if (!text) return [];
-      
-      const diagnostics: Diagnostic[] = [];
-      const lines = text.split('\n');
-      
-      for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
-        const line = lines[lineIndex];
-        if (!line) continue;
-        
-        // Basic syntax checks
-        const trimmed = line.trim();
-        
-        // Check for unmatched 'if' without 'end'
-        if (trimmed.startsWith('if ') && !findMatchingEnd(lines, lineIndex)) {
-          diagnostics.push({
-            range: {
-              start: { line: lineIndex, character: 0 },
-              end: { line: lineIndex, character: line.length }
-            },
-            severity: DiagnosticSeverity.Error,
-            message: "Missing 'end' for 'if' statement",
-            source: "hyperscript-lsp"
-          });
-        }
-        
-        // Check for unmatched 'on' without 'end'
-        if (trimmed.startsWith('on ') && !findMatchingEnd(lines, lineIndex)) {
-          diagnostics.push({
-            range: {
-              start: { line: lineIndex, character: 0 },
-              end: { line: lineIndex, character: line.length }
-            },
-            severity: DiagnosticSeverity.Error,
-            message: "Missing 'end' for 'on' event handler",
-            source: "hyperscript-lsp"
-          });
-        }
-        
-        // Check for unknown commands
-        const words = trimmed.split(/\s+/);
-        if (words.length > 0 && words[0]) {
-          const firstWord = words[0].toLowerCase();
-          
-          // Skip comments and common keywords
-          if (!firstWord.startsWith('--') && 
-              !['if', 'else', 'end', 'on', 'behavior', 'init', 'def', 'then'].includes(firstWord)) {
-            
-            try {
-              const hoverInfo = await dbService.getHoverInfo(firstWord);
-              if (!hoverInfo) {
-                diagnostics.push({
-                  range: {
-                    start: { line: lineIndex, character: line.indexOf(words[0]) },
-                    end: { line: lineIndex, character: line.indexOf(words[0]) + words[0].length }
-                  },
-                  severity: DiagnosticSeverity.Warning,
-                  message: `Unknown command or keyword: '${firstWord}'`,
-                  source: "hyperscript-lsp"
-                });
-              }
-            } catch (error) {
-              // Ignore database errors for diagnostics
-            }
-          }
-        }
-      }
-      
-      return diagnostics;
+      return await provideDiagnosticsImpl(uri);
+    },
+
+    provideDiagnostics: async (uri: string): Promise<Diagnostic[]> => {
+      return await provideDiagnosticsImpl(uri);
     },
 
     handleDocumentSymbols: async (uri: string): Promise<DocumentSymbol[]> => {

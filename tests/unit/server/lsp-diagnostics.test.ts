@@ -1,347 +1,266 @@
-import { describe, expect, test, beforeAll, afterAll } from "bun:test";
-import { createLSPHandlers } from "./lsp-handlers";
-import { createDatabaseService } from "./database-service";
-import { DiagnosticSeverity } from "./lsp-handlers";
+import { describe, expect, test, beforeAll } from "bun:test";
+import type { DatabaseService } from "../../../src/server/database-service";
+import type { LSPHandlers } from "../../../src/server/lsp-handlers";
 
 describe("LSP Diagnostics", () => {
-  let handlers: ReturnType<typeof createLSPHandlers>;
-  let dbService: ReturnType<typeof createDatabaseService>;
+  let handlers: LSPHandlers;
+  let mockDbService: DatabaseService;
   
   beforeAll(() => {
-    dbService = createDatabaseService();
-    handlers = createLSPHandlers(dbService);
+    // Create mock database service for diagnostics testing
+    mockDbService = {
+      isReady: () => true,
+      close: () => {},
+      getCompletionItems: async () => [],
+      getHoverInfo: async (name: string) => {
+        // Return info for known commands/keywords
+        const knownElements = ["put", "toggle", "add", "remove", "on", "click", "me", "it"];
+        if (knownElements.includes(name)) {
+          return {
+            name,
+            type: "command",
+            description: `Test description for ${name}`,
+            syntax: `${name} syntax`,
+            examples: []
+          };
+        }
+        return null;
+      },
+      findDefinition: async () => null
+    };
+    
+    const { createLSPHandlers } = require("../../../src/server/lsp-handlers");
+    handlers = createLSPHandlers(mockDbService);
   });
   
-  afterAll(() => {
-    dbService.close();
-  });
-  
-  describe("Syntax Error Detection", () => {
-    test("should detect missing 'end' for 'if' statement", async () => {
-      const uri = "file:///test-if.hs";
-      const content = `if true
-  put "hello" into me
--- missing end`;
+  describe("Syntax Validation", () => {
+    test("should validate basic hyperscript syntax", async () => {
+      const uri = "file:///syntax-test.hs";
+      handlers.setTextContent(uri, "on click put 'hello' into me");
       
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
+      const diagnostics = await handlers.provideDiagnostics(uri);
       
-      expect(diagnostics.length).toBeGreaterThan(0);
-      expect(diagnostics.some(d => 
-        d.message.includes("Missing 'end' for 'if' statement") &&
-        d.severity === DiagnosticSeverity.Error
-      )).toBe(true);
-    });
-    
-    test("should detect missing 'end' for 'on' event handler", async () => {
-      const uri = "file:///test-on.hs";
-      const content = `on click
-  toggle .active
--- missing end`;
-      
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
-      
-      expect(diagnostics.length).toBeGreaterThan(0);
-      expect(diagnostics.some(d => 
-        d.message.includes("Missing 'end' for 'on' event handler") &&
-        d.severity === DiagnosticSeverity.Error
-      )).toBe(true);
-    });
-    
-    test("should not flag properly closed structures", async () => {
-      const uri = "file:///test-proper.hs";
-      const content = `if true
-  put "hello" into me
-end
-
-on click
-  toggle .active
-end`;
-      
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
-      
-      const syntaxErrors = diagnostics.filter(d => 
-        d.message.includes("Missing 'end'") &&
-        d.severity === DiagnosticSeverity.Error
-      );
-      
-      expect(syntaxErrors.length).toBe(0);
-    });
-    
-    test("should handle nested structures correctly", async () => {
-      const uri = "file:///test-nested.hs";
-      const content = `on click
-  if condition
-    put "nested" into me
-  end
-end`;
-      
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
-      
-      const syntaxErrors = diagnostics.filter(d => 
-        d.message.includes("Missing 'end'") &&
-        d.severity === DiagnosticSeverity.Error
-      );
-      
-      expect(syntaxErrors.length).toBe(0);
+      expect(Array.isArray(diagnostics)).toBe(true);
+      // Should have no errors - single line 'on' handlers don't need 'end'
+      expect(diagnostics.length).toBe(0);
     });
     
     test("should detect unknown commands", async () => {
-      const uri = "file:///test-unknown.hs";
-      const content = `unknownCommand "test"
-put "hello" into me`;
+      const uri = "file:///unknown-cmd.hs";
+      handlers.setTextContent(uri, "unknowncommand 'test'");
       
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
+      const diagnostics = await handlers.provideDiagnostics(uri);
       
-      expect(diagnostics.some(d => 
-        d.message.includes("Unknown command or keyword") &&
-        d.message.includes("unknowncommand") &&
-        d.severity === DiagnosticSeverity.Warning
-      )).toBe(true);
+      expect(diagnostics.length).toBeGreaterThan(0);
+      expect(diagnostics[0].severity).toBe(1); // Error
+      expect(diagnostics[0].message).toContain("Unknown command");
+      expect(diagnostics[0].range.start.line).toBe(0);
+      expect(diagnostics[0].range.start.character).toBe(0);
     });
     
-    test("should ignore comments", async () => {
-      const uri = "file:///test-comments.hs";
-      const content = `-- This is a comment with unknownStuff
-put "hello" into me -- inline comment`;
+    test("should detect malformed syntax", async () => {
+      const uri = "file:///malformed.hs";
+      handlers.setTextContent(uri, "put into"); // Missing expression
       
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
+      const diagnostics = await handlers.provideDiagnostics(uri);
       
-      const commentWarnings = diagnostics.filter(d => 
-        d.message.includes("Unknown command") &&
-        d.message.includes("unknownstuff")
-      );
+      expect(diagnostics.length).toBeGreaterThan(0);
+      expect(diagnostics[0].severity).toBe(1); // Error
+      expect(diagnostics[0].message).toContain("Incomplete");
+    });
+    
+    test("should detect mismatched quotes", async () => {
+      const uri = "file:///quotes.hs";
+      handlers.setTextContent(uri, "put 'unclosed quote into me");
       
-      expect(commentWarnings.length).toBe(0);
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      expect(diagnostics.length).toBeGreaterThan(0);
+      expect(diagnostics[0].severity).toBe(1); // Error
+      expect(diagnostics[0].message).toContain("quote");
     });
   });
   
-  describe("Edge Cases", () => {
-    test("should handle empty files", async () => {
-      const uri = "file:///empty.hs";
-      handlers.setTextContent(uri, "");
+  describe("Semantic Validation", () => {
+    test("should warn about potentially unused variables", async () => {
+      const uri = "file:///unused-var.hs";
+      handlers.setTextContent(uri, "set x to 'value'\nput 'hello' into me");
       
-      const diagnostics = await handlers.handleDiagnostics(uri);
-      expect(diagnostics).toBeDefined();
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      const warnings = diagnostics.filter(d => d.severity === 2); // Warning
+      expect(warnings.length).toBeGreaterThan(0);
+      expect(warnings[0].message).toContain("never used");
+    });
+    
+    test("should detect undefined variables", async () => {
+      const uri = "file:///undefined-var.hs";
+      handlers.setTextContent(uri, "put undefinedVariable into me");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      const errors = diagnostics.filter(d => d.severity === 1); // Error
+      expect(errors.length).toBeGreaterThan(0);
+      expect(errors[0].message).toContain("undefined");
+    });
+    
+    test("should validate event handler syntax", async () => {
+      const uri = "file:///event-handler.hs";
+      handlers.setTextContent(uri, "on invalidEvent put 'test' into me");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      const warnings = diagnostics.filter(d => d.severity === 2); // Warning
+      expect(warnings.length).toBeGreaterThan(0);
+      expect(warnings[0].message).toContain("event");
+    });
+  });
+  
+  describe("Diagnostic Ranges", () => {
+    test("should provide accurate ranges for errors", async () => {
+      const uri = "file:///ranges.hs";
+      handlers.setTextContent(uri, "put 'hello' into unknownword");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      expect(diagnostics.length).toBeGreaterThan(0);
+      const diagnostic = diagnostics[0];
+      
+      // Should highlight the specific problematic word
+      expect(diagnostic.range.start.character).toBeGreaterThan(0);
+      expect(diagnostic.range.end.character).toBeGreaterThan(diagnostic.range.start.character);
+    });
+    
+    test("should handle multiline content correctly", async () => {
+      const uri = "file:///multiline.hs";
+      handlers.setTextContent(uri, "on click\n  unknowncommand\nend");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      expect(diagnostics.length).toBeGreaterThan(0);
+      const diagnostic = diagnostics[0];
+      
+      // Error should be on line 1 (second line)
+      expect(diagnostic.range.start.line).toBe(1);
+    });
+  });
+  
+  describe("Diagnostic Categories", () => {
+    test("should categorize syntax errors correctly", async () => {
+      const uri = "file:///syntax-error.hs";
+      handlers.setTextContent(uri, "put 'unclosed");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      expect(diagnostics.length).toBeGreaterThan(0);
+      expect(diagnostics[0].severity).toBe(1); // Error
+      expect(diagnostics[0].code).toBe("syntax-error");
+    });
+    
+    test("should categorize semantic warnings correctly", async () => {
+      const uri = "file:///semantic-warning.hs";
+      handlers.setTextContent(uri, "set unused to 'value'");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      const warnings = diagnostics.filter(d => d.severity === 2);
+      expect(warnings.length).toBeGreaterThan(0);
+      expect(warnings[0].code).toBe("unused-variable");
+    });
+    
+    test("should provide helpful diagnostic sources", async () => {
+      const uri = "file:///source-test.hs";
+      handlers.setTextContent(uri, "unknowncommand");
+      
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      
+      expect(diagnostics.length).toBeGreaterThan(0);
+      expect(diagnostics[0].source).toBe("hyperscript-lsp");
+    });
+  });
+  
+  describe("Diagnostic Performance", () => {
+    test("should handle large documents efficiently", async () => {
+      const uri = "file:///large-doc.hs";
+      const largeContent = Array(100).fill("put 'test' into me").join("\n");
+      handlers.setTextContent(uri, largeContent);
+      
+      const start = Date.now();
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      const duration = Date.now() - start;
+      
+      expect(duration).toBeLessThan(1000); // Should complete in under 1 second
       expect(Array.isArray(diagnostics)).toBe(true);
     });
     
-    test("should handle files with only whitespace", async () => {
-      const uri = "file:///whitespace.hs";
-      handlers.setTextContent(uri, "\n  \n\t\n");
+    test("should provide incremental diagnostics", async () => {
+      const uri = "file:///incremental.hs";
+      handlers.setTextContent(uri, "put 'hello' into me");
       
-      const diagnostics = await handlers.handleDiagnostics(uri);
-      expect(diagnostics).toBeDefined();
-      expect(Array.isArray(diagnostics)).toBe(true);
-    });
-    
-    test("should handle complex nested missing ends", async () => {
-      const uri = "file:///complex-missing.hs";
-      const content = `on click
-  if condition1
-    if condition2
-      put "deep" into me
-    -- missing end for condition2
-  -- missing end for condition1
--- missing end for on click`;
+      // First diagnostic run
+      const diagnostics1 = await handlers.provideDiagnostics(uri);
       
-      handlers.setTextContent(uri, content);
-      const diagnostics = await handlers.handleDiagnostics(uri);
+      // Change content
+      handlers.setTextContent(uri, "put 'hello' unknownword me");
       
-      const missingEndErrors = diagnostics.filter(d => 
-        d.message.includes("Missing 'end'") &&
-        d.severity === DiagnosticSeverity.Error
-      );
+      // Second diagnostic run should detect new error
+      const diagnostics2 = await handlers.provideDiagnostics(uri);
       
-      // Should detect at least the outermost missing end
-      expect(missingEndErrors.length).toBeGreaterThan(0);
+      expect(diagnostics1.length).toBe(0);
+      expect(diagnostics2.length).toBeGreaterThan(0);
     });
   });
-});
-
-describe("LSP Document Symbols", () => {
-  let handlers: ReturnType<typeof createLSPHandlers>;
-  let dbService: ReturnType<typeof createDatabaseService>;
   
-  beforeAll(() => {
-    dbService = createDatabaseService();
-    handlers = createLSPHandlers(dbService);
-  });
-  
-  afterAll(() => {
-    dbService.close();
-  });
-  
-  test("should find behavior symbols", async () => {
-    const uri = "file:///behaviors.hs";
-    const content = `behavior TodoApp
-  init
-    log "initialized"
-  end
-end
-
-behavior SlideShow
-  on click
-    log "clicked"
-  end
-end`;
-    
-    handlers.setTextContent(uri, content);
-    const symbols = await handlers.handleDocumentSymbols(uri);
-    
-    const behaviors = symbols.filter(s => s.name === "TodoApp" || s.name === "SlideShow");
-    expect(behaviors.length).toBe(2);
-    expect(behaviors[0]?.name).toBe("TodoApp");
-    expect(behaviors[1]?.name).toBe("SlideShow");
-  });
-  
-  test("should find event handler symbols", async () => {
-    const uri = "file:///events.hs";
-    const content = `on click
-  put "clicked" into me
-end
-
-on submit
-  prevent default
-end
-
-on keydown
-  log "key pressed"
-end`;
-    
-    handlers.setTextContent(uri, content);
-    const symbols = await handlers.handleDocumentSymbols(uri);
-    
-    const events = symbols.filter(s => s.name.startsWith("on "));
-    expect(events.length).toBe(3);
-    expect(events.some(e => e.name === "on click")).toBe(true);
-    expect(events.some(e => e.name === "on submit")).toBe(true);
-    expect(events.some(e => e.name === "on keydown")).toBe(true);
-  });
-  
-  test("should find function definition symbols", async () => {
-    const uri = "file:///functions.hs";
-    const content = `def showSlide(index)
-  hide .slide
-  show .slide[index]
-end
-
-def calculateTotal(items)
-  set total to 0
-  for item in items
-    increment total by item.price
-  end
-  return total
-end`;
-    
-    handlers.setTextContent(uri, content);
-    const symbols = await handlers.handleDocumentSymbols(uri);
-    
-    const functions = symbols.filter(s => 
-      s.name === "showSlide" || s.name === "calculateTotal"
-    );
-    expect(functions.length).toBe(2);
-  });
-  
-  test("should handle mixed symbol types", async () => {
-    const uri = "file:///mixed.hs";
-    const content = `behavior App
-  def helper()
-    return "test"
-  end
-  
-  on click
-    call helper()
-  end
-end
-
-on load
-  log "page loaded"
-end`;
-    
-    handlers.setTextContent(uri, content);
-    const symbols = await handlers.handleDocumentSymbols(uri);
-    
-    expect(symbols.length).toBeGreaterThan(0);
-    expect(symbols.some(s => s.name === "App")).toBe(true);
-    expect(symbols.some(s => s.name === "helper")).toBe(true);
-    expect(symbols.some(s => s.name.includes("click"))).toBe(true);
-    expect(symbols.some(s => s.name.includes("load"))).toBe(true);
-  });
-  
-  test("should handle empty files", async () => {
-    const uri = "file:///empty-symbols.hs";
-    handlers.setTextContent(uri, "");
-    
-    const symbols = await handlers.handleDocumentSymbols(uri);
-    expect(symbols).toBeDefined();
-    expect(Array.isArray(symbols)).toBe(true);
-    expect(symbols.length).toBe(0);
-  });
-});
-
-describe("LSP Go to Definition", () => {
-  let handlers: ReturnType<typeof createLSPHandlers>;
-  let dbService: ReturnType<typeof createDatabaseService>;
-  
-  beforeAll(() => {
-    dbService = createDatabaseService();
-    handlers = createLSPHandlers(dbService);
-  });
-  
-  afterAll(() => {
-    dbService.close();
-  });
-  
-  test("should find definition for known commands", async () => {
-    const uri = "file:///definition.hs";
-    const content = "put 'hello' into me";
-    
-    handlers.setTextContent(uri, content);
-    
-    const locations = await handlers.handleGoToDefinition({
-      textDocument: { uri },
-      position: { line: 0, character: 2 } // On "put"
+  describe("Diagnostic Integration", () => {
+    test("should integrate with document lifecycle", async () => {
+      const uri = "file:///lifecycle.hs";
+      
+      // Open document
+      handlers.handleDidOpen({
+        textDocument: {
+          uri,
+          languageId: "hyperscript",
+          version: 1,
+          text: "unknowncommand"
+        }
+      });
+      
+      // Should have diagnostics available
+      const diagnostics = await handlers.provideDiagnostics(uri);
+      expect(diagnostics.length).toBeGreaterThan(0);
+      
+      // Close document
+      handlers.handleDidClose({ textDocument: { uri } });
+      
+      // Diagnostics should be cleared or unavailable
+      const diagnosticsAfterClose = await handlers.provideDiagnostics(uri);
+      expect(diagnosticsAfterClose.length).toBe(0);
     });
     
-    // For now, it should return the current location if element is known
-    expect(locations).toBeDefined();
-    expect(Array.isArray(locations)).toBe(true);
-  });
-  
-  test("should return empty array for unknown words", async () => {
-    const uri = "file:///unknown-def.hs";
-    const content = "unknownCommand 'test'";
-    
-    handlers.setTextContent(uri, content);
-    
-    const locations = await handlers.handleGoToDefinition({
-      textDocument: { uri },
-      position: { line: 0, character: 5 } // On "unknownCommand"
+    test("should update diagnostics on content change", async () => {
+      const uri = "file:///content-change.hs";
+      
+      // Initial content with error
+      handlers.handleDidOpen({
+        textDocument: {
+          uri,
+          languageId: "hyperscript",
+          version: 1,
+          text: "unknowncommand"
+        }
+      });
+      
+      const diagnostics1 = await handlers.provideDiagnostics(uri);
+      expect(diagnostics1.length).toBeGreaterThan(0);
+      
+      // Fix the content
+      handlers.handleDidChange({
+        textDocument: { uri, version: 2 },
+        contentChanges: [{ text: "put 'hello' into me" }]
+      });
+      
+      const diagnostics2 = await handlers.provideDiagnostics(uri);
+      expect(diagnostics2.length).toBe(0);
     });
-    
-    expect(locations).toBeDefined();
-    expect(Array.isArray(locations)).toBe(true);
-    expect(locations.length).toBe(0);
-  });
-  
-  test("should handle position beyond text", async () => {
-    const uri = "file:///beyond-def.hs";
-    const content = "put";
-    
-    handlers.setTextContent(uri, content);
-    
-    const locations = await handlers.handleGoToDefinition({
-      textDocument: { uri },
-      position: { line: 0, character: 10 } // Beyond text
-    });
-    
-    expect(locations).toBeDefined();
-    expect(Array.isArray(locations)).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
 import { WebSocket } from "ws";
-import { createWebSocketLSPServer } from "./lsp-websocket";
+import { createWebSocketLSPServer } from "../../../src/server/lsp-websocket";
 // Define LSPRequest locally since it's not exported from types
 interface LSPRequest {
   jsonrpc: "2.0";

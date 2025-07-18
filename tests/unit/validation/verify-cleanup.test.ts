@@ -1,7 +1,7 @@
 import { describe, test, expect, beforeAll } from "bun:test";
-import { createLSPHandlers } from "../../server/lsp-handlers";
-import { createDatabaseService } from "../../server/database-service";
-import { detectDataArtifacts } from "./detect-artifacts";
+import { createLSPHandlers } from "../../../src/server/lsp-handlers";
+import { createDatabaseService } from "../../../src/server/database-service";
+import { detectDataArtifacts } from "../../../scripts/validation/detect-artifacts";
 import * as path from "node:path";
 
 describe("Post-Cleanup Verification", () => {

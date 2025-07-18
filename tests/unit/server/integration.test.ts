@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
-import { createLSPServer } from "./lsp-server";
-import { createWebSocketLSPServer } from "./lsp-websocket";
+import { createLSPServer } from "../../../src/server/lsp-server";
+import { createWebSocketLSPServer } from "../../../src/server/lsp-websocket";
 
 describe("Server Integration", () => {
   test("HTTP server starts and responds to health check", async () => {

@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll } from "bun:test";
-import { createLSPHandlers } from "./lsp-handlers";
-import { createDatabaseService } from "./database-service";
+import { createLSPHandlers } from "../../../src/server/lsp-handlers";
+import { createDatabaseService } from "../../../src/server/database-service";
 import * as path from "node:path";
 
 describe("Hover Integration Tests", () => {

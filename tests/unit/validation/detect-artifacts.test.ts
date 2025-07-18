@@ -1,6 +1,6 @@
 import { describe, test, expect, beforeAll } from "bun:test";
-import { detectDataArtifacts, type ArtifactReport } from "./detect-artifacts";
-import { createConnection } from "../../db/connection";
+import { detectDataArtifacts, type ArtifactReport } from "../../../scripts/validation/detect-artifacts";
+import { createConnection } from "../../../src/db/connection";
 import * as path from "node:path";
 
 describe("Artifact Detection", () => {

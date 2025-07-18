@@ -1,7 +1,7 @@
 import { describe, expect, test, beforeAll, afterAll } from "bun:test";
-import { createLSPHandlers } from "./lsp-handlers";
-import { createDatabaseService } from "./database-service";
-import { createLSPServer } from "./lsp-server";
+import { createLSPHandlers } from "../../../src/server/lsp-handlers";
+import { createDatabaseService } from "../../../src/server/database-service";
+import { createLSPServer } from "../../../src/server/lsp-server";
 import type { CompletionParams, HoverParams, DefinitionParams } from "vscode-languageserver";
 
 describe("LSP Integration Tests with Real Hyperscript", () => {

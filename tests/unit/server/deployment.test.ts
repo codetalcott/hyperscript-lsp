@@ -1,5 +1,5 @@
 import { describe, test, expect } from "bun:test";
-import { createLSPServer } from "./lsp-server";
+import { createLSPServer } from "../../../src/server/lsp-server";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
