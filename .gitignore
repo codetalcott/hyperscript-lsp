@@ -162,3 +162,6 @@ Thumbs.db
 # Test files
 test-*.ts
 *-test.db
+
+# LLM training framework (experimental)
+tests/llm-training/
