@@ -346,12 +346,17 @@ export class HyperscriptAgentAPI {
     }
     
     // Check for common patterns (very fast validation)
-    // Only use pattern matching for "fast" target, not "comprehensive"
+    // Only use pattern matching for valid patterns when performance_target is "fast"
     const patternMatch = this.patternMatcher.matchPattern(request.code);
     if (patternMatch && request.performance_target === "fast") {
-      const result = this.createPatternValidationResult(request, patternMatch, startTime);
-      this.validationCache.put(cacheKey, result, Date.now() - startTime);
-      return result;
+      // Still do basic syntax validation even for pattern matches
+      const basicSyntaxCheck = await this.validateSyntaxLevel(request.code);
+      if (basicSyntaxCheck.errors.length === 0) {
+        const result = this.createPatternValidationResult(request, patternMatch, startTime);
+        this.validationCache.put(cacheKey, result, Date.now() - startTime);
+        return result;
+      }
+      // If pattern matched but has syntax errors, fall through to full validation
     }
     
     // Perform comprehensive validation
@@ -618,13 +623,17 @@ export class HyperscriptAgentAPI {
       }
       
       // Check for common syntax errors
-      if (trimmed.startsWith('put ') && !trimmed.includes(' into ')) {
+      // Check for put commands (both standalone and within event handlers)
+      if ((trimmed.startsWith('put ') || trimmed.includes(' put ')) && !trimmed.includes(' into ')) {
+        const putIndex = trimmed.indexOf(' put ');
+        const putStart = putIndex >= 0 ? putIndex : 0;
+        
         errors.push({
           code: "missing-into",
           message: "Missing 'into' keyword in put command",
           severity: "error",
           range: {
-            start: { line: lineIndex, character: 0 },
+            start: { line: lineIndex, character: putStart },
             end: { line: lineIndex, character: line.length }
           },
           fix_suggestions: ["Add 'into' keyword: put 'value' into target"]
