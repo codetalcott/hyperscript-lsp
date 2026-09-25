@@ -1,6 +1,11 @@
 # hyperscript-lsp
 
-⚠️ **Experimental Alpha Stage** - This project is in early development and APIs may change.
+> [!WARNING]
+> **This repository is archived and no longer maintained.**
+>
+> Current \_hyperscript tooling lives in [hyperscript-tools](https://github.com/codetalcott/hyperscript-tools), which checks code with the official `hyperscript.org` parser. Its MCP server is published as [`@hyperscript-tools/mcp-server`](https://www.npmjs.com/package/@hyperscript-tools/mcp-server).
+>
+> The code in this repository does not work as documented. The VS Code extension cannot start its server, hover and diagnostics give incorrect results, and the Agent API and MCP servers are broken. The [code review](docs/review/2026-09-25-code-review.md) has the details. The rest of this README describes the project as it was planned and is kept for reference only.
 
 A Language Server Protocol implementation for [hyperscript](https://hyperscript.org), providing intelligent code assistance for this human-readable scripting language.
 
